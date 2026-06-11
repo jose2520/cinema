@@ -1,0 +1,127 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "admin@test.com",
+      "password": "A123456",
+      "role": "admin",
+      "name": "Admin"
+    },
+    {
+      "id": "2",
+      "email": "user@test.com",
+      "password": "A123456",
+      "role": "user",
+      "name": "Carlos"
+    },
+    {
+      "id": "3",
+      "email": "user2@test.com",
+      "password": "A123456",
+      "role": "user",
+      "name": "María"
+    },
+    {
+      "name": "Jose del Carmen Diaz Diaz",
+      "email": "josedelcarmen_diaz@outlook.com",
+      "password": "123456jj",
+      "role": "user",
+      "id": "gdWCWdXSfFk"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "1",
+      "name": "Sala 1",
+      "capacity": 100,
+      "type": "2D",
+      "status": "active"
+    },
+    {
+      "id": "2",
+      "name": "Sala 2",
+      "capacity": 80,
+      "type": "3D",
+      "status": "active"
+    },
+    {
+      "id": "3",
+      "name": "Sala IMAX",
+      "capacity": 150,
+      "type": "IMAX",
+      "status": "active"
+    }
+  ],
+  "screenings": [
+    {
+      "id": "1",
+      "movie": "Dune: Parte 3",
+      "image": "https://placehold.co/300x450/1e293b/6366f1?text=Dune+Parte+3",
+      "roomId": 1,
+      "date": "2026-06-10",
+      "time": "20:00",
+      "totalCapacity": 100,
+      "availableSeats": 85,
+      "status": "Activa"
+    },
+    {
+      "id": "2",
+      "movie": "El Caballero de la Noche",
+      "image": "https://placehold.co/300x450/1e293b/f59e0b?text=El+Caballero+de+la+Noche",
+      "roomId": 2,
+      "date": "2026-06-11",
+      "time": "18:30",
+      "totalCapacity": 80,
+      "availableSeats": 79,
+      "status": "Activa"
+    },
+    {
+      "id": "3",
+      "movie": "Interestelar",
+      "image": "https://placehold.co/300x450/1e293b/10b981?text=Interestelar",
+      "roomId": 3,
+      "date": "2026-06-12",
+      "time": "21:00",
+      "totalCapacity": 150,
+      "availableSeats": 150,
+      "status": "Activa"
+    },
+    {
+      "movie": "scary movie 6",
+      "roomId": 3,
+      "date": "2026-06-05",
+      "time": "19:32",
+      "totalCapacity": 150,
+      "availableSeats": 150,
+      "status": "Activa",
+      "id": "_Fte9NVed1w"
+    }
+  ],
+  "reservations": [
+    {
+      "id": "1",
+      "userId": 2,
+      "screeningId": 1,
+      "quantity": 3,
+      "reservationDate": "2026-06-05",
+      "status": "Confirmada"
+    },
+    {
+      "id": "2",
+      "userId": 3,
+      "screeningId": 1,
+      "quantity": 2,
+      "reservationDate": "2026-06-05",
+      "status": "Pendiente"
+    },
+    {
+      "userId": "gdWCWdXSfFk",
+      "screeningId": "2",
+      "quantity": 1,
+      "reservationDate": "2026-06-06",
+      "status": "Confirmada",
+      "id": "MEIWvqQbweU"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

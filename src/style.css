@@ -1,0 +1,22 @@
+/* Importa todas las utilidades de TailwindCSS para generar los estilos del framework */
+@import "tailwindcss";
+
+/* Sobrescribe el modo oscuro para que use la clase .dark en <html> en lugar de prefers-color-scheme */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Define la animación de entrada deslizante desde la derecha para las notificaciones toast */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Clase utilitaria que aplica la animación slide-in con duración de 0.3 segundos */
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
