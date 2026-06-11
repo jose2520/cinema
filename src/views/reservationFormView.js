@@ -6,9 +6,65 @@ import { getReservationById, createReservation, updateReservation } from "@/serv
 import { navigateTo } from "@/router/router";
 import { showToast } from "@/components/Toast";
 
+const SEAT_AVAILABLE = "🟢";
+const SEAT_OCCUPIED = "🔴";
+const SEAT_SELECTED = "🟡";
+
+// Genera una rejilla de asientos distribuyendo los ocupados de forma determinista
+const generateSeatGrid = (totalCapacity, availableSeats, screeningId) => {
+  const cols = Math.min(10, Math.ceil(Math.sqrt(totalCapacity)));
+  const rows = Math.ceil(totalCapacity / cols);
+  const occupiedCount = totalCapacity - availableSeats;
+  const seats = [];
+
+  const occupiedSet = new Set();
+  let idx = 0;
+  while (occupiedSet.size < occupiedCount) {
+    const hash = ((screeningId?.charCodeAt(idx % screeningId?.length) || 7) + idx * 13) % totalCapacity;
+    occupiedSet.add(hash);
+    idx++;
+  }
+
+  let index = 0;
+  for (let r = 0; r < rows; r++) {
+    const row = [];
+    for (let c = 0; c < cols; c++) {
+      if (index >= totalCapacity) break;
+      const seatId = `${String.fromCharCode(65 + r)}${c + 1}`;
+      const isOccupied = occupiedSet.has(index);
+      row.push({ id: seatId, occupied: isOccupied, selected: false });
+      index++;
+    }
+    if (row.length > 0) seats.push(row);
+  }
+
+  return seats;
+};
+
+const renderSeatGrid = (seats) => {
+  return seats
+    .map(
+      (row, ri) => `
+      <div class="flex justify-center gap-1.5 mb-1.5">
+        <span class="text-xs text-gray-400 w-5 text-right leading-8">${String.fromCharCode(65 + ri)}</span>
+        ${row
+          .map(
+            (seat) => `
+          <button type="button" data-seat="${seat.id}" data-occupied="${seat.occupied}"
+            class="seat-btn text-lg leading-none p-1 rounded transition-transform hover:scale-110 ${seat.occupied ? "cursor-not-allowed opacity-60" : "cursor-pointer"}">
+            ${seat.occupied ? SEAT_OCCUPIED : seat.selected ? SEAT_SELECTED : SEAT_AVAILABLE}
+          </button>
+        `
+          )
+          .join("")}
+      </div>
+    `
+    )
+    .join("");
+};
+
 // Vista de formulario para crear o editar una reserva
 export default function reservationFormView(params) {
-  // Determina si es edición (tiene id pero no screeningId) o creación nueva
   const isEdit = !!params?.id && !params?.screeningId;
   const screeningId = params?.screeningId;
   return `
@@ -25,10 +81,24 @@ export default function reservationFormView(params) {
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Cantidad de asientos</label>
-          <input type="number" name="quantity" min="1" max="10" value="1" required
-            class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
-          <p id="maxSeats" class="text-xs text-gray-400 mt-1"></p>
+          <div class="flex items-center justify-between mb-3">
+            <label class="block text-sm font-medium">Selecciona tus asientos</label>
+            <div class="flex items-center gap-3 text-xs text-gray-500">
+              <span>${SEAT_AVAILABLE} Libre</span>
+              <span>${SEAT_SELECTED} Seleccionado</span>
+              <span>${SEAT_OCCUPIED} Ocupado</span>
+            </div>
+          </div>
+          <div id="seatMap" class="py-4 overflow-x-auto">
+            <p class="text-sm text-gray-400 text-center">Cargando mapa de asientos...</p>
+          </div>
+          <div class="text-center mb-2">
+            <span class="inline-flex items-center gap-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-4 py-2 rounded-lg font-semibold text-lg">
+              🎟️ <span id="selectedCount">0</span> asiento(s)
+            </span>
+          </div>
+          <input type="hidden" name="quantity" value="0">
+          <p id="maxSeats" class="text-xs text-gray-400 text-center mt-1"></p>
         </div>
 
         <div class="flex gap-3 pt-4">
@@ -53,14 +123,57 @@ reservationFormView._init = async (params) => {
 
   const form = document.querySelector("#reservationForm");
   const screeningInfo = document.querySelector("#screeningInfo");
+  const seatMap = document.querySelector("#seatMap");
   const quantityInput = form.querySelector('[name="quantity"]');
+  const selectedCount = document.querySelector("#selectedCount");
   const maxSeats = document.querySelector("#maxSeats");
 
   let screening = null;
+  let seatGrid = [];
+  let maxSelectable = 0;
+
+  const updateQuantity = () => {
+    const selected = seatGrid.flat().filter((s) => s.selected).length;
+    if (selected > maxSelectable) {
+      showToast(`Máximo ${maxSelectable} asientos`, "warning");
+      return;
+    }
+    selectedCount.textContent = selected;
+    quantityInput.value = selected;
+  };
+
+  const renderSeats = () => {
+    seatMap.innerHTML = `
+      <div class="mb-4 text-center">
+        <div class="inline-block bg-gray-200 dark:bg-gray-600 rounded-lg px-6 py-2 text-xs text-gray-500 dark:text-gray-400 font-medium">🎬 PANTALLA</div>
+      </div>
+      ${renderSeatGrid(seatGrid)}
+    `;
+
+    seatMap.querySelectorAll("[data-seat]").forEach((btn) => {
+      const isOccupied = btn.dataset.occupied === "true";
+      if (isOccupied) return;
+
+      btn.addEventListener("click", () => {
+        const seatId = btn.dataset.seat;
+        for (const row of seatGrid) {
+          const seat = row.find((s) => s.id === seatId);
+          if (seat) {
+            if (!seat.occupied) {
+              seat.selected = !seat.selected;
+              btn.textContent = seat.selected ? SEAT_SELECTED : SEAT_AVAILABLE;
+              btn.classList.toggle("scale-110", seat.selected);
+              updateQuantity();
+            }
+            break;
+          }
+        }
+      });
+    });
+  };
 
   try {
     if (isEdit) {
-      // Modo edición: carga la reserva y verifica permisos del usuario
       const reservation = await getReservationById(editId);
       if (reservation.userId !== user.id && user.role !== "admin") {
         showToast("No tienes permiso para editar esta reserva", "error");
@@ -68,16 +181,28 @@ reservationFormView._init = async (params) => {
         return;
       }
       screening = await getScreeningById(reservation.screeningId);
-      quantityInput.value = reservation.quantity;
+      maxSelectable = screening.availableSeats + reservation.quantity;
+      seatGrid = generateSeatGrid(screening.totalCapacity, screening.availableSeats, screening.id);
+
+      let preSelected = 0;
+      for (const row of seatGrid) {
+        for (const seat of row) {
+          if (!seat.occupied && preSelected < reservation.quantity) {
+            seat.selected = true;
+            preSelected++;
+          }
+        }
+      }
+
       screeningInfo.innerHTML = `
         <p class="font-semibold">${screening.movie}</p>
         <p class="text-sm text-gray-500 dark:text-gray-400">📅 ${screening.date} · 🕐 ${screening.time} · 🏛️ ${screening.room?.name} · 💺 ${screening.availableSeats} disponibles</p>
         <p class="text-xs text-gray-400 mt-1">Editando reserva de ${reservation.quantity} asiento(s) — Estado: ${reservation.status}</p>
       `;
-      maxSeats.textContent = `Máximo: ${screening.availableSeats + reservation.quantity} asientos`;
-      quantityInput.max = screening.availableSeats + reservation.quantity;
+      maxSeats.textContent = `Máximo: ${maxSelectable} asientos`;
+      renderSeats();
+      updateQuantity();
     } else if (screeningId) {
-      // Modo creación: carga la función y valida disponibilidad
       screening = await getScreeningById(screeningId);
       if (screening.status !== "Activa") {
         showToast("Esta función no está disponible", "error");
@@ -89,12 +214,16 @@ reservationFormView._init = async (params) => {
         navigateTo("screenings");
         return;
       }
+      maxSelectable = screening.availableSeats;
+      seatGrid = generateSeatGrid(screening.totalCapacity, screening.availableSeats, screening.id);
+
       screeningInfo.innerHTML = `
         <p class="font-semibold">${screening.movie}</p>
         <p class="text-sm text-gray-500 dark:text-gray-400">📅 ${screening.date} · 🕐 ${screening.time} · 🏛️ ${screening.room?.name} · 💺 ${screening.availableSeats} disponibles</p>
       `;
-      maxSeats.textContent = `Máximo: ${screening.availableSeats} asientos`;
-      quantityInput.max = screening.availableSeats;
+      maxSeats.textContent = `Máximo: ${maxSelectable} asientos`;
+      renderSeats();
+      updateQuantity();
     } else {
       showToast("Error: función no especificada", "error");
       navigateTo("screenings");
@@ -106,14 +235,12 @@ reservationFormView._init = async (params) => {
     return;
   }
 
-  // Maneja el envío del formulario: crea o actualiza la reserva y ajusta asientos disponibles
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const quantity = Number(quantityInput.value);
 
-    // Validación de cantidad dentro del rango permitido
-    if (quantity < 1 || quantity > Number(quantityInput.max)) {
-      showToast(`Cantidad inválida (máx: ${quantityInput.max})`, "warning");
+    if (quantity < 1 || quantity > maxSelectable) {
+      showToast(`Selecciona entre 1 y ${maxSelectable} asientos`, "warning");
       return;
     }
 
@@ -123,7 +250,6 @@ reservationFormView._init = async (params) => {
 
     try {
       if (isEdit) {
-        // Actualiza reserva existente y recalcula asientos disponibles
         const oldReservation = await getReservationById(editId);
         const diff = quantity - oldReservation.quantity;
         if (diff > 0 && diff > screening.availableSeats) {
@@ -140,7 +266,6 @@ reservationFormView._init = async (params) => {
         })).json();
         showToast("Reserva actualizada", "success");
       } else {
-        // Crea nueva reserva y descuenta asientos disponibles
         await createReservation({ userId: user.id, screeningId: screening.id, quantity });
         await (await fetch(`http://localhost:3001/screenings/${screening.id}`, {
           method: "PATCH",
@@ -157,7 +282,6 @@ reservationFormView._init = async (params) => {
     }
   });
 
-  // Asigna navegación a elementos con data-nav
   document.querySelectorAll("[data-nav]").forEach((el) => {
     el.addEventListener("click", (e) => {
       e.preventDefault();
