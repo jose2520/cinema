@@ -24,6 +24,17 @@ export default function screeningFormView(params) {
         </div>
 
         <div>
+          <label class="block text-sm font-medium mb-1">Imagen</label>
+          <div class="flex items-center gap-3">
+            <input type="file" name="image" accept="image/*"
+              class="block w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-50 dark:file:bg-indigo-900/30 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-900/50 cursor-pointer">
+          </div>
+          <div id="imagePreview" class="mt-2 hidden">
+            <img class="w-24 h-36 object-cover rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+          </div>
+        </div>
+
+        <div>
           <label class="block text-sm font-medium mb-1">Sala</label>
           <select name="roomId" required
             class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
@@ -72,6 +83,27 @@ screeningFormView._init = async (params) => {
   const form = document.querySelector("#screeningForm");
   const roomSelect = form.querySelector('[name="roomId"]');
 
+  const fileInput = form.querySelector('[name="image"]');
+  const imagePreview = document.querySelector("#imagePreview");
+  const imagePreviewImg = imagePreview?.querySelector("img");
+  let imageData = null;
+
+  fileInput?.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      imagePreview.classList.add("hidden");
+      imageData = null;
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      imageData = ev.target.result;
+      imagePreviewImg.src = imageData;
+      imagePreview.classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+  });
+
   try {
     // Carga la lista de salas para el selector
     const rooms = await getRooms();
@@ -88,6 +120,11 @@ screeningFormView._init = async (params) => {
       form.date.value = screening.date;
       form.time.value = screening.time;
       form.status.value = screening.status;
+      if (screening.image) {
+        imageData = screening.image;
+        imagePreviewImg.src = imageData;
+        imagePreview.classList.remove("hidden");
+      }
     }
   } catch {
     showToast("Error al cargar datos", "error");
@@ -109,6 +146,10 @@ screeningFormView._init = async (params) => {
         date: form.date.value,
         time: form.time.value,
       };
+
+      if (imageData) {
+        data.image = imageData;
+      }
 
       if (isEdit) {
         if (form.status.value !== undefined) data.status = form.status.value;
