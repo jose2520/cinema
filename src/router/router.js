@@ -128,8 +128,8 @@ export const router = () => {
     return;
   }
 
-  // Renderiza el HTML de la vista en el contenedor principal
-  app.innerHTML = route.view(params);
+  // Renderiza el HTML de la vista en el contenedor principal con animación de entrada
+  app.innerHTML = `<div class="animate-fade-in">${route.view(params)}</div>`;
 
   // Inicializa los eventos de la vista después de que el DOM se haya actualizado
   setTimeout(() => {

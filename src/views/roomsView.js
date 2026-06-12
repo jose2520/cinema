@@ -42,7 +42,7 @@ roomsView._init = async () => {
       grid.innerHTML = rooms
         .map(
           (r) => `
-          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 hover-lift">
             <div class="flex items-start justify-between mb-3">
               <h3 class="font-bold text-lg">${r.name}</h3>
               <span class="text-xs px-2 py-1 rounded-full font-medium ${r.status === "active" ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700" : "bg-red-100 text-red-700"}">${r.status}</span>
@@ -52,8 +52,8 @@ roomsView._init = async () => {
               <p>${icon("armchair", "w-4 h-4 inline")} ${r.capacity} asientos</p>
             </div>
             <div class="flex gap-2">
-              <button data-nav="rooms/edit/${r.id}" class="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm transition-colors">${icon("pencil", "w-4 h-4 inline")} Editar</button>
-              <button data-delete="${r.id}" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 rounded-lg text-sm transition-colors">${icon("trash-2", "w-4 h-4")}</button>
+              <button data-nav="rooms/edit/${r.id}" class="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm transition-all hover:scale-105 active:scale-95">${icon("pencil", "w-4 h-4 inline")} Editar</button>
+              <button data-delete="${r.id}" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 rounded-lg text-sm transition-all hover:scale-105 active:scale-95">${icon("trash-2", "w-4 h-4")}</button>
             </div>
           </div>
         `

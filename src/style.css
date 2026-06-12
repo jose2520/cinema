@@ -1,22 +1,87 @@
-/* Importa todas las utilidades de TailwindCSS para generar los estilos del framework */
 @import "tailwindcss";
-
-/* Sobrescribe el modo oscuro para que use la clase .dark en <html> en lugar de prefers-color-scheme */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Define la animación de entrada deslizante desde la derecha para las notificaciones toast */
+/* ===== Toast ===== */
 @keyframes slide-in {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-out {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(100%); }
+}
+.animate-slide-in  { animation: slide-in 0.3s ease-out; }
+.animate-slide-out { animation: slide-out 0.3s ease-in forwards; }
+
+/* ===== Page transition ===== */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fade-in 0.35s ease-out; }
+
+/* ===== Modal ===== */
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.92) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-scale-in  { animation: scale-in 0.25s ease-out; }
+.animate-overlay-in { animation: overlay-in 0.2s ease-out; }
+
+/* ===== Staggered list items ===== */
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-stagger > * {
+  animation: stagger-in 0.3s ease-out both;
+}
+.animate-stagger > *:nth-child(1) { animation-delay: 0.02s; }
+.animate-stagger > *:nth-child(2) { animation-delay: 0.06s; }
+.animate-stagger > *:nth-child(3) { animation-delay: 0.10s; }
+.animate-stagger > *:nth-child(4) { animation-delay: 0.14s; }
+.animate-stagger > *:nth-child(5) { animation-delay: 0.18s; }
+.animate-stagger > *:nth-child(6) { animation-delay: 0.22s; }
+.animate-stagger > *:nth-child(7) { animation-delay: 0.26s; }
+.animate-stagger > *:nth-child(8) { animation-delay: 0.30s; }
+.animate-stagger > *:nth-child(n+9) { animation-delay: 0.34s; }
+
+/* ===== Skeleton ===== */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+.dark .animate-shimmer {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200% 100%;
 }
 
-/* Clase utilitaria que aplica la animación slide-in con duración de 0.3 segundos */
-.animate-slide-in {
-  animation: slide-in 0.3s ease-out;
+/* ===== Hover card lift ===== */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px -8px rgba(0,0,0,0.12);
+}
+.dark .hover-lift:hover {
+  box-shadow: 0 12px 24px -8px rgba(0,0,0,0.4);
+}
+
+/* ===== Smooth scroll ===== */
+html { scroll-behavior: smooth; }
+
+/* ===== Navbar glass ===== */
+.navbar-glass {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }

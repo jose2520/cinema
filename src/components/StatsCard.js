@@ -11,13 +11,13 @@ export default function StatsCard({ title, value, icon, color = "indigo" }) {
   };
 
   return `
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover-lift">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm text-gray-500 dark:text-gray-400">${title}</p>
           <p class="text-2xl font-bold mt-1">${value}</p>
         </div>
-        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-xl ${colors[color] || colors.indigo}">
+        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-xl transition-transform hover:scale-110 ${colors[color] || colors.indigo}">
           ${icon}
         </div>
       </div>

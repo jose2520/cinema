@@ -32,7 +32,7 @@ export default function screeningsView() {
         </select>
       </div>
 
-      <div id="screeningsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div id="screeningsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         ${EmptyState({ message: "Cargando funciones..." })}
       </div>
     </div>
@@ -67,14 +67,15 @@ screeningsView._init = async () => {
     }
 
     // Renderiza cada función como tarjeta con imagen, detalles y botones de acción
+    grid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-stagger";
     grid.innerHTML = filtered
       .map(
         (s) => `
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow ${s.status === "Cancelada" ? "opacity-60" : ""}">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover-lift ${s.status === "Cancelada" ? "opacity-60" : ""}">
           <div class="aspect-[2/3] bg-gray-200 dark:bg-gray-700 overflow-hidden">
             <img src="${s.image || `https://placehold.co/300x450/1e293b/6366f1?text=${encodeURIComponent(s.movie)}`}" 
                  alt="${s.movie}" 
-                 class="w-full h-full object-cover"
+                 class="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                    onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full\\'>${icon("clapperboard", "w-10 h-10 text-gray-400").replace(/"/g, "&quot;")}</div>'">
           </div>
           <div class="p-4">
@@ -93,12 +94,12 @@ screeningsView._init = async () => {
             </div>
             <div class="flex gap-2">
               ${s.status === "Activa" && s.availableSeats > 0
-                ? `<button data-nav="reservations/create/${s.id}" class="flex-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors">Reservar</button>`
+                ? `<button data-nav="reservations/create/${s.id}" class="flex-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95">Reservar</button>`
                 : `<button disabled class="flex-1 px-3 py-2 bg-gray-300 dark:bg-gray-600 text-gray-500 rounded-lg text-sm font-medium cursor-not-allowed">${s.availableSeats <= 0 ? "Agotado" : "Cancelada"}</button>`}
               ${isAdmin()
                 ? `
-                  <button data-nav="screenings/edit/${s.id}" class="px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">${icon("pencil", "w-4 h-4")}</button>
-                  <button data-delete="${s.id}" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 rounded-lg transition-colors">${icon("trash-2", "w-4 h-4")}</button>
+                  <button data-nav="screenings/edit/${s.id}" class="px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all hover:scale-105 active:scale-95">${icon("pencil", "w-4 h-4")}</button>
+                  <button data-delete="${s.id}" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 rounded-lg transition-all hover:scale-105 active:scale-95">${icon("trash-2", "w-4 h-4")}</button>
                 `
                 : ""}
             </div>

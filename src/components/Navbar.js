@@ -52,23 +52,23 @@ export default function Navbar() {
 
   // Retorna el HTML completo de la barra de navegación con soporte responsive y dark mode
   return `
-    <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <nav class="bg-white/80 dark:bg-gray-900/80 navbar-glass border-b border-gray-200 dark:border-gray-700 shadow-sm sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-4">
         <div class="flex items-center justify-between h-16">
           <div class="flex items-center gap-8">
-            <a href="/home" data-nav="home" class="text-xl font-bold text-indigo-600 dark:text-indigo-400">CineReserve</a>
+            <a href="/home" data-nav="home" class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">CineReserve</a>
             <div class="hidden md:flex items-center gap-1">
               ${[...userItems, profileItem]
                 .map(
                   (item) =>
-                    `<a href="/${item.path}" data-nav="${item.path}" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">${item.label}</a>`
+                    `<a href="/${item.path}" data-nav="${item.path}" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-all hover:scale-105 active:scale-95">${item.label}</a>`
                 )
                 .join("")}
               ${isAdmin()
                 ? adminItems
                     .map(
                       (item) =>
-                        `<a href="/${item.path}" data-nav="${item.path}" class="px-3 py-2 rounded-lg text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors">${item.label}</a>`
+                        `<a href="/${item.path}" data-nav="${item.path}" class="px-3 py-2 rounded-lg text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all hover:scale-105 active:scale-95">${item.label}</a>`
                     )
                     .join("")
                 : ""}
@@ -76,13 +76,13 @@ export default function Navbar() {
           </div>
 
           <div class="flex items-center gap-3">
-            <button id="themeToggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-lg">
+            <button id="themeToggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all hover:scale-110 active:scale-90 text-lg">
               ${isDark ? icon("sun", "w-5 h-5") : icon("moon", "w-5 h-5")}
             </button>
 
             <div class="flex items-center gap-2">
-              <span class="hidden sm:inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <span class="w-7 h-7 rounded-full overflow-hidden bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+              <a href="/profile" data-nav="profile" class="hidden sm:inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <span class="w-7 h-7 rounded-full overflow-hidden bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400 flex-shrink-0 ring-2 ring-transparent hover:ring-indigo-400 transition-all">
                   ${user?.photo
                     ? `<img src="${user.photo}" alt="" class="w-full h-full object-cover">`
                     : (user?.name?.charAt(0).toUpperCase() || "?")}
@@ -91,8 +91,8 @@ export default function Navbar() {
                 <span class="text-xs px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300">
                   ${user?.role}
                 </span>
-              </span>
-              <button id="logoutBtn" class="px-3 py-1.5 text-sm rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors font-medium">
+              </a>
+              <button id="logoutBtn" class="px-3 py-1.5 text-sm rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-all hover:scale-105 active:scale-95 font-medium">
                 Salir
               </button>
             </div>

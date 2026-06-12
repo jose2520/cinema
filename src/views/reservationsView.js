@@ -30,7 +30,7 @@ export default function reservationsView() {
         </select>
       </div>
 
-      <div id="reservationsList" class="space-y-3">
+      <div id="reservationsList" class="space-y-3 animate-stagger">
         ${EmptyState({ message: "Cargando reservas..." })}
       </div>
     </div>
@@ -73,7 +73,7 @@ reservationsView._init = async () => {
         const canApprove = isAdmin() && r.status === "Pendiente";
 
         return `
-          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 hover-lift">
             <div class="flex items-start justify-between gap-4">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">

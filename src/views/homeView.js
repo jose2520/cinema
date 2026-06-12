@@ -28,31 +28,31 @@ export default function homeView() {
       </div>
 
       ${isAdmin() ? `
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <button data-nav="screenings/create" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 animate-stagger">
+          <button data-nav="screenings/create" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover-lift text-left">
             <span class="text-2xl">${icon("clapperboard", "w-8 h-8")}</span>
             <h3 class="font-semibold mt-2">Nueva Función</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Agregar una función a la cartelera</p>
           </button>
-          <button data-nav="rooms" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
+          <button data-nav="rooms" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover-lift text-left">
             <span class="text-2xl">${icon("landmark", "w-8 h-8")}</span>
             <h3 class="font-semibold mt-2">Gestionar Salas</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Administrar salas de cine</p>
           </button>
-          <button data-nav="dashboard" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
+          <button data-nav="dashboard" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover-lift text-left">
             <span class="text-2xl">${icon("bar-chart-3", "w-8 h-8")}</span>
             <h3 class="font-semibold mt-2">Dashboard</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Estadísticas de ocupación</p>
           </button>
         </div>
       ` : `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <button data-nav="screenings" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 animate-stagger">
+          <button data-nav="screenings" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover-lift text-left">
             <span class="text-2xl">${icon("clapperboard", "w-8 h-8")}</span>
             <h3 class="font-semibold mt-2">Ver Cartelera</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Consulta funciones disponibles</p>
           </button>
-          <button data-nav="reservations" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
+          <button data-nav="reservations" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover-lift text-left">
             <span class="text-2xl">${icon("ticket", "w-8 h-8")}</span>
             <h3 class="font-semibold mt-2">Mis Reservas</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Ver y gestionar tus reservas</p>
