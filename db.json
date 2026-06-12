@@ -6,7 +6,7 @@
       "password": "A123456",
       "role": "admin",
       "name": "Admin",
-      "photo": ""
+      "photo": "/photo/profile_Admin.jpg"
     },
     {
       "id": "2",
