@@ -5,6 +5,7 @@ import EmptyState from "@/components/EmptyState";
 import { getScreenings } from "@/services/screening.service";
 import { getReservations } from "@/services/reservation.service";
 import { getRooms } from "@/services/room.service";
+import { icon } from "@/utils/icons";
 
 // Vista de Dashboard con estadísticas, ocupación por sala y tabla de funciones
 export default function dashboardView() {
@@ -75,10 +76,10 @@ dashboardView._init = async () => {
 
     // Renderiza las 4 tarjetas de estadísticas principales
     statsEl.innerHTML = [
-      StatsCard({ title: "Funciones Activas", value: `${activeScreenings}/${totalScreenings}`, icon: "🎬", color: "indigo" }),
-      StatsCard({ title: "Reservas", value: totalReservations, icon: "🎟️", color: "emerald" }),
-      StatsCard({ title: "Ocupación", value: `${occupancyRate}%`, icon: "📈", color: "amber" }),
-      StatsCard({ title: "Asientos Vendidos", value: totalBookedSeats, icon: "💺", color: "rose" }),
+      StatsCard({ title: "Funciones Activas", value: `${activeScreenings}/${totalScreenings}`, icon: icon("clapperboard", "w-6 h-6"), color: "indigo" }),
+      StatsCard({ title: "Reservas", value: totalReservations, icon: icon("ticket", "w-6 h-6"), color: "emerald" }),
+      StatsCard({ title: "Ocupación", value: `${occupancyRate}%`, icon: icon("trending-up", "w-6 h-6"), color: "amber" }),
+      StatsCard({ title: "Asientos Vendidos", value: totalBookedSeats, icon: icon("armchair", "w-6 h-6"), color: "rose" }),
     ].join("");
 
     // Renderiza barras de ocupación por cada sala
@@ -126,7 +127,7 @@ dashboardView._init = async () => {
 
     // Renderiza tabla completa de funciones o mensaje de vacío
     if (screenings.length === 0) {
-      tableEl.innerHTML = EmptyState({ message: "No hay funciones registradas", icon: "🎬" });
+      tableEl.innerHTML = EmptyState({ message: "No hay funciones registradas", icon: icon("clapperboard", "w-8 h-8") });
     } else {
       tableEl.innerHTML = `
         <div class="overflow-x-auto">

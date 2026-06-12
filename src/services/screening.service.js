@@ -7,7 +7,7 @@ export const getScreenings = async () => {
   const rooms = await http.get("/rooms");
   return screenings.map((s) => ({
     ...s,
-    room: rooms.find((r) => r.id === s.roomId),
+    room: rooms.find((r) => r.id === String(s.roomId)),
   }));
 };
 
@@ -15,7 +15,7 @@ export const getScreenings = async () => {
 export const getScreeningById = async (id) => {
   const screening = await http.get(`/screenings/${id}`);
   const rooms = await http.get("/rooms");
-  return { ...screening, room: rooms.find((r) => r.id === screening.roomId) };
+  return { ...screening, room: rooms.find((r) => r.id === String(screening.roomId)) };
 };
 
 // Crea una nueva función con capacidad total y asientos disponibles iguales, estado "Activa"

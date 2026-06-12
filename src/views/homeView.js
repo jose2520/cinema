@@ -6,8 +6,8 @@ import { getSession, isAdmin } from "@/utils";
 import { getScreenings } from "@/services/screening.service";
 import { getReservations } from "@/services/reservation.service";
 import { getRooms } from "@/services/room.service";
-import { navigateTo } from "@/router/router";
 import { showToast } from "@/components/Toast";
+import { icon } from "@/utils/icons";
 
 // Vista de inicio (panel de control) con contenido diferenciado según el rol del usuario
 export default function homeView() {
@@ -30,17 +30,17 @@ export default function homeView() {
       ${isAdmin() ? `
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <button data-nav="screenings/create" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
-            <span class="text-2xl">🎬</span>
+            <span class="text-2xl">${icon("clapperboard", "w-8 h-8")}</span>
             <h3 class="font-semibold mt-2">Nueva Función</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Agregar una función a la cartelera</p>
           </button>
           <button data-nav="rooms" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
-            <span class="text-2xl">🏛️</span>
+            <span class="text-2xl">${icon("landmark", "w-8 h-8")}</span>
             <h3 class="font-semibold mt-2">Gestionar Salas</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Administrar salas de cine</p>
           </button>
           <button data-nav="dashboard" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
-            <span class="text-2xl">📊</span>
+            <span class="text-2xl">${icon("bar-chart-3", "w-8 h-8")}</span>
             <h3 class="font-semibold mt-2">Dashboard</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Estadísticas de ocupación</p>
           </button>
@@ -48,12 +48,12 @@ export default function homeView() {
       ` : `
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <button data-nav="screenings" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
-            <span class="text-2xl">🎬</span>
+            <span class="text-2xl">${icon("clapperboard", "w-8 h-8")}</span>
             <h3 class="font-semibold mt-2">Ver Cartelera</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Consulta funciones disponibles</p>
           </button>
           <button data-nav="reservations" class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
-            <span class="text-2xl">🎟️</span>
+            <span class="text-2xl">${icon("ticket", "w-8 h-8")}</span>
             <h3 class="font-semibold mt-2">Mis Reservas</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Ver y gestionar tus reservas</p>
           </button>
@@ -73,14 +73,6 @@ homeView._init = async () => {
   const user = getSession();
   const statsGrid = document.querySelector("#statsGrid");
   const recentContainer = document.querySelector("#recentContainer");
-
-  // Asigna navegación a botones con data-nav
-  document.querySelectorAll("[data-nav]").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      navigateTo(el.dataset.nav);
-    });
-  });
 
   try {
     // Obtiene funciones, reservas y salas en paralelo
@@ -106,23 +98,23 @@ homeView._init = async () => {
     // Renderiza tarjetas de estadísticas según el rol
     if (isAdmin()) {
       statsGrid.innerHTML = [
-        StatsCard({ title: "Funciones", value: `${activeScreenings}/${totalScreenings}`, icon: "🎬", color: "indigo" }),
-        StatsCard({ title: "Reservas", value: totalReservations, icon: "🎟️", color: "emerald" }),
-        StatsCard({ title: "Confirmadas", value: confirmedReservations, icon: "✅", color: "cyan" }),
-        StatsCard({ title: "Salas", value: totalRooms, icon: "🏛️", color: "amber" }),
+        StatsCard({ title: "Funciones", value: `${activeScreenings}/${totalScreenings}`, icon: icon("clapperboard", "w-6 h-6"), color: "indigo" }),
+        StatsCard({ title: "Reservas", value: totalReservations, icon: icon("ticket", "w-6 h-6"), color: "emerald" }),
+        StatsCard({ title: "Confirmadas", value: confirmedReservations, icon: icon("circle-check", "w-6 h-6"), color: "cyan" }),
+        StatsCard({ title: "Salas", value: totalRooms, icon: icon("landmark", "w-6 h-6"), color: "amber" }),
       ].join("");
     } else {
       statsGrid.innerHTML = [
-        StatsCard({ title: "Mis Reservas", value: userReservations.length, icon: "🎟️", color: "indigo" }),
-        StatsCard({ title: "Funciones Disponibles", value: activeScreenings, icon: "🎬", color: "emerald" }),
-        StatsCard({ title: "Asientos Totales", value: totalSeats, icon: "💺", color: "amber" }),
-        StatsCard({ title: "Salas", value: totalRooms, icon: "🏛️", color: "cyan" }),
+        StatsCard({ title: "Mis Reservas", value: userReservations.length, icon: icon("ticket", "w-6 h-6"), color: "indigo" }),
+        StatsCard({ title: "Funciones Disponibles", value: activeScreenings, icon: icon("clapperboard", "w-6 h-6"), color: "emerald" }),
+        StatsCard({ title: "Asientos Totales", value: totalSeats, icon: icon("armchair", "w-6 h-6"), color: "amber" }),
+        StatsCard({ title: "Salas", value: totalRooms, icon: icon("landmark", "w-6 h-6"), color: "cyan" }),
       ].join("");
     }
 
     // Muestra reservas recientes o un mensaje de estado vacío
     if (recentReservations.length === 0) {
-      recentContainer.innerHTML = EmptyState({ message: "No hay reservas recientes", icon: "📭" });
+      recentContainer.innerHTML = EmptyState({ message: "No hay reservas recientes", icon: icon("inbox", "w-8 h-8") });
     } else {
       recentContainer.innerHTML = `
         <div class="space-y-3">

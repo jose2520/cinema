@@ -1,6 +1,7 @@
 // Importa utilidades de sesión y navegación para el menú de navegación
 import { getSession, removeSession, isAdmin } from "@/utils";
 import { navigateTo } from "@/router/router";
+import { icon } from "@/utils/icons";
 
 // Componente de barra de navegación principal con enlaces según el rol del usuario
 export default function Navbar() {
@@ -17,28 +18,18 @@ export default function Navbar() {
 
   // Programa la asignación de eventos después de que el HTML se renderice en el DOM
   setTimeout(() => {
-    // Asigna navegación a todos los elementos con atributo data-nav
-    document.querySelectorAll("[data-nav]").forEach((el) => {
-      el.addEventListener("click", (e) => {
-        e.preventDefault();
-        navigateTo(el.dataset.nav);
-      });
-    });
-
-    // Asigna el evento de cierre de sesión al botón "Salir"
     document.querySelector("#logoutBtn")?.addEventListener("click", () => {
       removeSession();
       navigateTo("login");
     });
 
-    // Maneja el toggle de tema oscuro/claro y persiste la preferencia en localStorage
     const toggle = document.querySelector("#themeToggle");
     if (toggle) {
       toggle.addEventListener("click", () => {
         document.documentElement.classList.toggle("dark");
         const nowDark = document.documentElement.classList.contains("dark");
         localStorage.setItem("theme", nowDark ? "dark" : "light");
-        toggle.textContent = nowDark ? "☀️" : "🌙";
+        toggle.innerHTML = nowDark ? icon("sun", "w-5 h-5") : icon("moon", "w-5 h-5");
       });
     }
   });
@@ -49,13 +40,14 @@ export default function Navbar() {
     { label: "Cartelera", path: "screenings" },
     { label: "Mis Reservas", path: "reservations" },
   ];
+  const profileItem = { label: `${icon("user", "w-4 h-4 inline")} Mi Perfil`, path: "profile" };
 
   // Elementos de navegación adicionales para administradores
   const adminItems = [
-    { label: "➕ Función", path: "screenings/create" },
-    { label: "🏛️ Salas", path: "rooms" },
-    { label: "📊 Dashboard", path: "dashboard" },
-    { label: "👥 Usuarios", path: "users" },
+    { label: `${icon("plus", "w-4 h-4 inline")} Función`, path: "screenings/create" },
+    { label: `${icon("landmark", "w-4 h-4 inline")} Salas`, path: "rooms" },
+    { label: `${icon("bar-chart-3", "w-4 h-4 inline")} Dashboard`, path: "dashboard" },
+    { label: `${icon("users", "w-4 h-4 inline")} Usuarios`, path: "users" },
   ];
 
   // Retorna el HTML completo de la barra de navegación con soporte responsive y dark mode
@@ -66,7 +58,7 @@ export default function Navbar() {
           <div class="flex items-center gap-8">
             <a href="/home" data-nav="home" class="text-xl font-bold text-indigo-600 dark:text-indigo-400">CineReserve</a>
             <div class="hidden md:flex items-center gap-1">
-              ${userItems
+              ${[...userItems, profileItem]
                 .map(
                   (item) =>
                     `<a href="/${item.path}" data-nav="${item.path}" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">${item.label}</a>`
@@ -85,13 +77,18 @@ export default function Navbar() {
 
           <div class="flex items-center gap-3">
             <button id="themeToggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-lg">
-              ${isDark ? "☀️" : "🌙"}
+              ${isDark ? icon("sun", "w-5 h-5") : icon("moon", "w-5 h-5")}
             </button>
 
             <div class="flex items-center gap-2">
-              <span class="hidden sm:inline text-sm text-gray-600 dark:text-gray-400">
+              <span class="hidden sm:inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <span class="w-7 h-7 rounded-full overflow-hidden bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                  ${user?.photo
+                    ? `<img src="${user.photo}" alt="" class="w-full h-full object-cover">`
+                    : (user?.name?.charAt(0).toUpperCase() || "?")}
+                </span>
                 ${user?.name}
-                <span class="text-xs px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 ml-1">
+                <span class="text-xs px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300">
                   ${user?.role}
                 </span>
               </span>
@@ -103,7 +100,7 @@ export default function Navbar() {
         </div>
 
         <div class="md:hidden flex gap-1 pb-2 overflow-x-auto">
-          ${userItems
+          ${[...userItems, profileItem]
             .map(
               (item) =>
                 `<a href="/${item.path}" data-nav="${item.path}" class="px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">${item.label}</a>`

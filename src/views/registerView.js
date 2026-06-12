@@ -1,6 +1,6 @@
-// Importa funciones de navegación y notificaciones toast
 import { navigateTo } from "@/router/router";
 import { showToast } from "@/components/Toast";
+import { getUsersByEmail, registerUser } from "@/services/auth.service";
 
 // Vista de formulario de registro de nuevo usuario
 export default function registerView() {
@@ -98,18 +98,12 @@ registerView._init = () => {
     submitBtn.textContent = "Registrando...";
 
     try {
-      // Verifica si el correo ya existe en la base de datos
-      const existing = await (await fetch("http://localhost:3001/users?email=" + encodeURIComponent(email))).json();
+      const existing = await getUsersByEmail(email);
       if (existing.length > 0) {
         throw new Error("El correo ya está registrado");
       }
 
-      // Crea el nuevo usuario con rol "user" por defecto
-      await fetch("http://localhost:3001/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, role: "user" }),
-      });
+      await registerUser({ name, email, password, role: "user" });
 
       showToast("Cuenta creada con éxito. Inicia sesión.", "success");
       navigateTo("login");
@@ -121,11 +115,4 @@ registerView._init = () => {
     }
   });
 
-  // Asigna navegación a enlaces con data-nav
-  document.querySelectorAll("[data-nav]").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      navigateTo(el.dataset.nav);
-    });
-  });
 };

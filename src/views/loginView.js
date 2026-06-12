@@ -107,11 +107,4 @@ loginView._init = () => {
     }
   });
 
-  // Asigna navegación a enlaces con data-nav
-  document.querySelectorAll("[data-nav]").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      navigateTo(el.dataset.nav);
-    });
-  });
 };

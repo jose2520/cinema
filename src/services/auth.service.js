@@ -14,3 +14,23 @@ export const loginUser = async (email, password) => {
 export const getAllUsers = async () => {
   return await http.get("/users");
 };
+
+// Obtiene un usuario por su ID
+export const getUserById = async (id) => {
+  return await http.get(`/users/${id}`);
+};
+
+// Busca usuarios por email
+export const getUsersByEmail = async (email) => {
+  return await http.get(`/users?email=${encodeURIComponent(email)}`);
+};
+
+// Crea un nuevo usuario
+export const registerUser = async (data) => {
+  return await http.post("/users", data);
+};
+
+// Actualiza un usuario existente por ID
+export const updateUser = async (id, data) => {
+  return await http.patch(`/users/${id}`, data);
+};

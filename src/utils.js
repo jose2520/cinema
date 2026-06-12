@@ -29,7 +29,7 @@ const setStorage = (user, remember) => {
    Extrae solo las propiedades esenciales (id, name, email, role) para mantener la higiene de datos.
 */
 export const saveSession = (user, remember = true) => {
-  setStorage({ id: user.id, name: user.name, email: user.email, role: user.role }, remember);
+  setStorage({ id: user.id, name: user.name, email: user.email, role: user.role, photo: user.photo || "" }, remember);
 };
 
 /* 

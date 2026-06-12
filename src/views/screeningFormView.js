@@ -1,9 +1,19 @@
-// Importa componentes y servicios para el formulario de funciones
 import Navbar from "@/components/Navbar";
-import { getRooms } from "@/services/room.service";
+import { getRooms, getRoomById } from "@/services/room.service";
 import { getScreeningById, createScreening, updateScreening } from "@/services/screening.service";
 import { navigateTo } from "@/router/router";
 import { showToast } from "@/components/Toast";
+
+const uploadImage = async (base64, filename) => {
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: base64, filename }),
+  });
+  if (!res.ok) throw new Error("Upload failed");
+  const data = await res.json();
+  return data.url;
+};
 
 // Vista de formulario para crear o editar una función (screening)
 export default function screeningFormView(params) {
@@ -130,7 +140,6 @@ screeningFormView._init = async (params) => {
     showToast("Error al cargar datos", "error");
   }
 
-  // Maneja el envío del formulario para crear o actualizar la función
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const submitBtn = form.querySelector('button[type="submit"]');
@@ -138,25 +147,28 @@ screeningFormView._init = async (params) => {
     submitBtn.textContent = "Guardando...";
 
     try {
-      // Obtiene la sala seleccionada para conocer la capacidad
-      const room = await (await fetch("http://localhost:3001/rooms/" + form.roomId.value)).json();
+      const movie = form.movie.value.trim();
+      const roomId = Number(form.roomId.value);
       const data = {
-        movie: form.movie.value.trim(),
-        roomId: Number(form.roomId.value),
+        movie,
+        roomId,
         date: form.date.value,
         time: form.time.value,
       };
 
       if (imageData) {
-        data.image = imageData;
+        data.image = imageData.startsWith("data:")
+          ? await uploadImage(imageData, movie)
+          : imageData;
       }
+
+      const room = await getRoomById(roomId);
 
       if (isEdit) {
         if (form.status.value !== undefined) data.status = form.status.value;
         await updateScreening(params.id, data);
         showToast("Función actualizada", "success");
       } else {
-        // Asigna capacidad total y disponibles según la sala seleccionada
         data.totalCapacity = room.capacity;
         data.availableSeats = room.capacity;
         await createScreening(data);
@@ -164,17 +176,11 @@ screeningFormView._init = async (params) => {
       }
       navigateTo("screenings");
     } catch (error) {
+      console.error("Error guardando función:", error);
       showToast("Error al guardar la función", "error");
       submitBtn.disabled = false;
       submitBtn.textContent = isEdit ? "Guardar Cambios" : "Crear Función";
     }
   });
 
-  // Asigna navegación a elementos con data-nav
-  document.querySelectorAll("[data-nav]").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      navigateTo(el.dataset.nav);
-    });
-  });
 };

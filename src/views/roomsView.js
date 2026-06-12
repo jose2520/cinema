@@ -3,8 +3,8 @@ import Navbar from "@/components/Navbar";
 import EmptyState from "@/components/EmptyState";
 import Modal from "@/components/Modal";
 import { getRooms, deleteRoom } from "@/services/room.service";
-import { navigateTo } from "@/router/router";
 import { showToast } from "@/components/Toast";
+import { icon } from "@/utils/icons";
 
 // Vista que lista todas las salas con opciones de editar y eliminar
 export default function roomsView() {
@@ -35,7 +35,7 @@ roomsView._init = async () => {
     try {
       const rooms = await getRooms();
       if (rooms.length === 0) {
-        grid.innerHTML = EmptyState({ message: "No hay salas registradas", icon: "🏛️" });
+        grid.innerHTML = EmptyState({ message: "No hay salas registradas", icon: icon("landmark", "w-8 h-8") });
         return;
       }
       // Renderiza cada sala como tarjeta con nombre, tipo, capacidad y acciones
@@ -48,25 +48,17 @@ roomsView._init = async () => {
               <span class="text-xs px-2 py-1 rounded-full font-medium ${r.status === "active" ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700" : "bg-red-100 text-red-700"}">${r.status}</span>
             </div>
             <div class="text-sm text-gray-500 dark:text-gray-400 space-y-1 mb-4">
-              <p>🎥 ${r.type}</p>
-              <p>💺 ${r.capacity} asientos</p>
+              <p>${icon("clapperboard", "w-4 h-4 inline")} ${r.type}</p>
+              <p>${icon("armchair", "w-4 h-4 inline")} ${r.capacity} asientos</p>
             </div>
             <div class="flex gap-2">
-              <button data-nav="rooms/edit/${r.id}" class="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm transition-colors">✏️ Editar</button>
-              <button data-delete="${r.id}" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 rounded-lg text-sm transition-colors">🗑️</button>
+              <button data-nav="rooms/edit/${r.id}" class="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm transition-colors">${icon("pencil", "w-4 h-4 inline")} Editar</button>
+              <button data-delete="${r.id}" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 rounded-lg text-sm transition-colors">${icon("trash-2", "w-4 h-4")}</button>
             </div>
           </div>
         `
         )
         .join("");
-
-      // Asigna navegación a botones de edición
-      grid.querySelectorAll("[data-nav]").forEach((el) => {
-        el.addEventListener("click", (e) => {
-          e.preventDefault();
-          navigateTo(el.dataset.nav);
-        });
-      });
 
       // Asigna eventos de eliminación con modal de confirmación
       grid.querySelectorAll("[data-delete]").forEach((el) => {
@@ -93,17 +85,9 @@ roomsView._init = async () => {
         });
       });
     } catch {
-      grid.innerHTML = EmptyState({ message: "Error al cargar salas", icon: "❌" });
+      grid.innerHTML = EmptyState({ message: "Error al cargar salas", icon: icon("circle-x", "w-8 h-8") });
     }
   };
 
   load();
-
-  // Asigna navegación a botones con data-nav (incluyendo el botón "Nueva Sala")
-  document.querySelectorAll("[data-nav]").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      navigateTo(el.dataset.nav);
-    });
-  });
 };

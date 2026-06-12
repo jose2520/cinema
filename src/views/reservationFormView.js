@@ -1,14 +1,15 @@
 // Importa componentes, servicios y utilidades para el formulario de reservas
 import Navbar from "@/components/Navbar";
 import { getSession } from "@/utils";
-import { getScreenings, getScreeningById } from "@/services/screening.service";
+import { getScreenings, getScreeningById, updateScreening } from "@/services/screening.service";
 import { getReservationById, createReservation, updateReservation } from "@/services/reservation.service";
 import { navigateTo } from "@/router/router";
 import { showToast } from "@/components/Toast";
+import { icon } from "@/utils/icons";
 
-const SEAT_AVAILABLE = "🟢";
-const SEAT_OCCUPIED = "🔴";
-const SEAT_SELECTED = "🟡";
+const SEAT_AVAILABLE = icon("circle", "w-5 h-5 fill-emerald-500 text-emerald-500");
+const SEAT_OCCUPIED = icon("circle", "w-5 h-5 fill-red-500 text-red-500");
+const SEAT_SELECTED = icon("circle", "w-5 h-5 fill-amber-500 text-amber-500");
 
 // Genera una rejilla de asientos distribuyendo los ocupados de forma determinista
 const generateSeatGrid = (totalCapacity, availableSeats, screeningId) => {
@@ -94,7 +95,7 @@ export default function reservationFormView(params) {
           </div>
           <div class="text-center mb-2">
             <span class="inline-flex items-center gap-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-4 py-2 rounded-lg font-semibold text-lg">
-              🎟️ <span id="selectedCount">0</span> asiento(s)
+              ${icon("ticket", "w-5 h-5 inline")} <span id="selectedCount">0</span> asiento(s)
             </span>
           </div>
           <input type="hidden" name="quantity" value="0">
@@ -145,7 +146,7 @@ reservationFormView._init = async (params) => {
   const renderSeats = () => {
     seatMap.innerHTML = `
       <div class="mb-4 text-center">
-        <div class="inline-block bg-gray-200 dark:bg-gray-600 rounded-lg px-6 py-2 text-xs text-gray-500 dark:text-gray-400 font-medium">🎬 PANTALLA</div>
+        <div class="inline-block bg-gray-200 dark:bg-gray-600 rounded-lg px-6 py-2 text-xs text-gray-500 dark:text-gray-400 font-medium">${icon("clapperboard", "w-4 h-4 inline")} PANTALLA</div>
       </div>
       ${renderSeatGrid(seatGrid)}
     `;
@@ -161,7 +162,7 @@ reservationFormView._init = async (params) => {
           if (seat) {
             if (!seat.occupied) {
               seat.selected = !seat.selected;
-              btn.textContent = seat.selected ? SEAT_SELECTED : SEAT_AVAILABLE;
+              btn.innerHTML = seat.selected ? SEAT_SELECTED : SEAT_AVAILABLE;
               btn.classList.toggle("scale-110", seat.selected);
               updateQuantity();
             }
@@ -196,7 +197,7 @@ reservationFormView._init = async (params) => {
 
       screeningInfo.innerHTML = `
         <p class="font-semibold">${screening.movie}</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">📅 ${screening.date} · 🕐 ${screening.time} · 🏛️ ${screening.room?.name} · 💺 ${screening.availableSeats} disponibles</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">${icon("calendar", "w-4 h-4 inline")} ${screening.date} · ${icon("clock", "w-4 h-4 inline")} ${screening.time} · ${icon("landmark", "w-4 h-4 inline")} ${screening.room?.name} · ${icon("armchair", "w-4 h-4 inline")} ${screening.availableSeats} disponibles</p>
         <p class="text-xs text-gray-400 mt-1">Editando reserva de ${reservation.quantity} asiento(s) — Estado: ${reservation.status}</p>
       `;
       maxSeats.textContent = `Máximo: ${maxSelectable} asientos`;
@@ -219,7 +220,7 @@ reservationFormView._init = async (params) => {
 
       screeningInfo.innerHTML = `
         <p class="font-semibold">${screening.movie}</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">📅 ${screening.date} · 🕐 ${screening.time} · 🏛️ ${screening.room?.name} · 💺 ${screening.availableSeats} disponibles</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">${icon("calendar", "w-4 h-4 inline")} ${screening.date} · ${icon("clock", "w-4 h-4 inline")} ${screening.time} · ${icon("landmark", "w-4 h-4 inline")} ${screening.room?.name} · ${icon("armchair", "w-4 h-4 inline")} ${screening.availableSeats} disponibles</p>
       `;
       maxSeats.textContent = `Máximo: ${maxSelectable} asientos`;
       renderSeats();
@@ -259,19 +260,11 @@ reservationFormView._init = async (params) => {
           return;
         }
         await updateReservation(editId, { quantity });
-        await (await fetch(`http://localhost:3001/screenings/${screening.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ availableSeats: screening.availableSeats - diff }),
-        })).json();
+        await updateScreening(screening.id, { availableSeats: screening.availableSeats - diff });
         showToast("Reserva actualizada", "success");
       } else {
         await createReservation({ userId: user.id, screeningId: screening.id, quantity });
-        await (await fetch(`http://localhost:3001/screenings/${screening.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ availableSeats: screening.availableSeats - quantity }),
-        })).json();
+        await updateScreening(screening.id, { availableSeats: screening.availableSeats - quantity });
         showToast("Reserva creada con éxito", "success");
       }
       navigateTo("reservations");
@@ -282,10 +275,4 @@ reservationFormView._init = async (params) => {
     }
   });
 
-  document.querySelectorAll("[data-nav]").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      navigateTo(el.dataset.nav);
-    });
-  });
 };

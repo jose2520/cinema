@@ -4,8 +4,8 @@ import EmptyState from "@/components/EmptyState";
 import Modal from "@/components/Modal";
 import { getSession, isAdmin } from "@/utils";
 import { getScreenings, deleteScreening } from "@/services/screening.service";
-import { navigateTo } from "@/router/router";
 import { showToast } from "@/components/Toast";
+import { icon } from "@/utils/icons";
 
 // Vista de cartelera con búsqueda, filtros y tarjetas de funciones
 export default function screeningsView() {
@@ -62,7 +62,7 @@ screeningsView._init = async () => {
     });
 
     if (filtered.length === 0) {
-      grid.innerHTML = EmptyState({ message: "No se encontraron funciones", icon: "🎬" });
+      grid.innerHTML = EmptyState({ message: "No se encontraron funciones", icon: icon("clapperboard", "w-8 h-8") });
       return;
     }
 
@@ -75,7 +75,7 @@ screeningsView._init = async () => {
             <img src="${s.image || `https://placehold.co/300x450/1e293b/6366f1?text=${encodeURIComponent(s.movie)}`}" 
                  alt="${s.movie}" 
                  class="w-full h-full object-cover"
-                 onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-4xl\\'>🎬</div>'">
+                   onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full\\'>${icon("clapperboard", "w-10 h-10 text-gray-400").replace(/"/g, "&quot;")}</div>'">
           </div>
           <div class="p-4">
             <div class="flex items-start justify-between mb-2">
@@ -87,9 +87,9 @@ screeningsView._init = async () => {
               }">${s.status}</span>
             </div>
             <div class="space-y-1 text-sm text-gray-500 dark:text-gray-400 mb-4">
-              <p>📅 ${s.date} · 🕐 ${s.time}</p>
-              <p>🏛️ ${s.room?.name || "Sala #" + s.roomId} (${s.room?.type || ""})</p>
-              <p>💺 ${s.availableSeats}/${s.totalCapacity} asientos</p>
+              <p>${icon("calendar", "w-4 h-4 inline")} ${s.date} · ${icon("clock", "w-4 h-4 inline")} ${s.time}</p>
+              <p>${icon("landmark", "w-4 h-4 inline")} ${s.room?.name || "Sala #" + s.roomId} (${s.room?.type || ""})</p>
+              <p>${icon("armchair", "w-4 h-4 inline")} ${s.availableSeats}/${s.totalCapacity} asientos</p>
             </div>
             <div class="flex gap-2">
               ${s.status === "Activa" && s.availableSeats > 0
@@ -97,8 +97,8 @@ screeningsView._init = async () => {
                 : `<button disabled class="flex-1 px-3 py-2 bg-gray-300 dark:bg-gray-600 text-gray-500 rounded-lg text-sm font-medium cursor-not-allowed">${s.availableSeats <= 0 ? "Agotado" : "Cancelada"}</button>`}
               ${isAdmin()
                 ? `
-                  <button data-nav="screenings/edit/${s.id}" class="px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm transition-colors">✏️</button>
-                  <button data-delete="${s.id}" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 rounded-lg text-sm transition-colors">🗑️</button>
+                  <button data-nav="screenings/edit/${s.id}" class="px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">${icon("pencil", "w-4 h-4")}</button>
+                  <button data-delete="${s.id}" class="px-3 py-2 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 rounded-lg transition-colors">${icon("trash-2", "w-4 h-4")}</button>
                 `
                 : ""}
             </div>
@@ -107,14 +107,6 @@ screeningsView._init = async () => {
       `
       )
       .join("");
-
-    // Asigna eventos de navegación a botones
-    grid.querySelectorAll("[data-nav]").forEach((el) => {
-      el.addEventListener("click", (e) => {
-        e.preventDefault();
-        navigateTo(el.dataset.nav);
-      });
-    });
 
     // Asigna eventos de eliminación con modal de confirmación
     grid.querySelectorAll("[data-delete]").forEach((el) => {
@@ -148,19 +140,10 @@ screeningsView._init = async () => {
     screenings = await getScreenings();
     render();
   } catch {
-    grid.innerHTML = EmptyState({ message: "Error al cargar funciones", icon: "❌" });
+    grid.innerHTML = EmptyState({ message: "Error al cargar funciones", icon: icon("circle-x", "w-8 h-8") });
   }
 
-  // Escucha cambios en los filtros para re-renderizar
   searchInput.addEventListener("input", render);
   filterDate.addEventListener("change", render);
   filterStatus.addEventListener("change", render);
-
-  // Asigna navegación a botones con data-nav
-  document.querySelectorAll("[data-nav]").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      navigateTo(el.dataset.nav);
-    });
-  });
 };

@@ -13,6 +13,7 @@ import roomsView from "@/views/roomsView";
 import roomFormView from "@/views/roomFormView";
 import usersView from "@/views/usersView";
 import dashboardView from "@/views/dashboardView";
+import profileView from "@/views/profileView";
 import notFoundView from "@/views/notFound";
 
 // Definición de rutas con su vista asociada y tipo de guardia (guest, auth, admin)
@@ -31,6 +32,7 @@ const routes = [
   { path: "rooms/edit/:id", view: roomFormView, guard: "admin" },
   { path: "users", view: usersView, guard: "admin" },
   { path: "dashboard", view: dashboardView, guard: "admin" },
+  { path: "profile", view: profileView, guard: "auth" },
 ];
 
 // Busca una ruta que coincida con la URL actual, extrayendo parámetros dinámicos (:id, :screeningId)

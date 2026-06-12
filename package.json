@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"vite\" \"json-server --watch db.json --port 3001\"",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "concurrently \"vite\" \"node server.js\"",
+    "build": "vite build && cp -r dist/. public/",
+    "preview": "node server.js"
   },
   "devDependencies": {
     "vite": "^8.0.12"
@@ -15,6 +15,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "concurrently": "^10.0.3",
     "json-server": "^1.0.0-beta.15",
+    "lucide": "^1.17.0",
     "tailwindcss": "^4.3.0"
   }
 }

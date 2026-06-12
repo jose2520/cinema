@@ -1,5 +1,5 @@
 // Componente de modal de confirmación con soporte para acción personalizada al confirmar
-export default function Modal({ id, title, content, confirmText = "Confirmar", cancelText = "Cancelar", onConfirm }) {
+export default function Modal({ id, title, content, confirmText = "Confirmar", cancelText = "Cancelar", confirmClass, onConfirm }) {
   // Programa la asignación de eventos después de que el HTML se inserte en el DOM
   setTimeout(() => {
     const modal = document.querySelector(`#${id}`);
@@ -32,7 +32,7 @@ export default function Modal({ id, title, content, confirmText = "Confirmar", c
           <button class="modal-cancel px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
             ${cancelText}
           </button>
-          <button class="modal-confirm px-4 py-2 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-colors">
+          <button class="modal-confirm px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors ${confirmClass || "bg-red-500 hover:bg-red-600"}">
             ${confirmText}
           </button>
         </div>

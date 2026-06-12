@@ -2,6 +2,7 @@
 import Navbar from "@/components/Navbar";
 import EmptyState from "@/components/EmptyState";
 import { getAllUsers } from "@/services/auth.service";
+import { icon } from "@/utils/icons";
 
 // Vista que lista todos los usuarios registrados en una tabla (solo admin)
 export default function usersView() {
@@ -30,6 +31,7 @@ usersView._init = async () => {
       <table class="w-full">
         <thead class="bg-gray-50 dark:bg-gray-700/50">
           <tr>
+            <th class="text-left px-4 py-3 text-sm font-medium text-gray-500"></th>
             <th class="text-left px-4 py-3 text-sm font-medium text-gray-500">ID</th>
             <th class="text-left px-4 py-3 text-sm font-medium text-gray-500">Nombre</th>
             <th class="text-left px-4 py-3 text-sm font-medium text-gray-500">Email</th>
@@ -39,8 +41,17 @@ usersView._init = async () => {
         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
           ${users
             .map(
-              (u) => `
+              (u) => {
+              const initials = u.name?.charAt(0).toUpperCase() || "?";
+              return `
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+              <td class="px-4 py-3 text-sm">
+                <span class="w-8 h-8 rounded-full overflow-hidden bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                  ${u.photo
+                    ? `<img src="${u.photo}" alt="" class="w-full h-full object-cover">`
+                    : initials}
+                </span>
+              </td>
               <td class="px-4 py-3 text-sm">${u.id}</td>
               <td class="px-4 py-3 text-sm font-medium">${u.name}</td>
               <td class="px-4 py-3 text-sm text-gray-500">${u.email}</td>
@@ -52,13 +63,13 @@ usersView._init = async () => {
                 }">${u.role}</span>
               </td>
             </tr>
-          `
-            )
+          `;
+            })
             .join("")}
         </tbody>
       </table>
     `;
   } catch {
-    container.innerHTML = EmptyState({ message: "Error al cargar usuarios", icon: "❌" });
+    container.innerHTML = EmptyState({ message: "Error al cargar usuarios", icon: icon("circle-x", "w-8 h-8") });
   }
 };
