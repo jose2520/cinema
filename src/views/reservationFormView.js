@@ -5,11 +5,10 @@ import { getScreenings, getScreeningById, updateScreening } from "@/services/scr
 import { getReservationById, createReservation, updateReservation } from "@/services/reservation.service";
 import { navigateTo } from "@/router/router";
 import { showToast } from "@/components/Toast";
+import { fireConfetti } from "@/utils/confetti";
 import { icon } from "@/utils/icons";
 
-const SEAT_AVAILABLE = icon("circle", "w-5 h-5 fill-emerald-500 text-emerald-500");
-const SEAT_OCCUPIED = icon("circle", "w-5 h-5 fill-red-500 text-red-500");
-const SEAT_SELECTED = icon("circle", "w-5 h-5 fill-amber-500 text-amber-500");
+const seatSvg = (fill) => `<svg width="20" height="20" viewBox="0 0 24 24" fill="${fill}" stroke="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"/></svg>`;
 
 // Genera una rejilla de asientos distribuyendo los ocupados de forma determinista
 const generateSeatGrid = (totalCapacity, availableSeats, screeningId) => {
@@ -46,17 +45,19 @@ const renderSeatGrid = (seats) => {
   return seats
     .map(
       (row, ri) => `
-      <div class="flex justify-center gap-1.5 mb-1.5">
-        <span class="text-xs text-gray-400 w-5 text-right leading-8">${String.fromCharCode(65 + ri)}</span>
+      <div class="flex justify-center gap-1 mb-1.5">
+        <span class="text-xs text-gray-400 w-5 text-right leading-7">${String.fromCharCode(65 + ri)}</span>
         ${row
           .map(
-            (seat) => `
+            (seat) => {
+            const fill = seat.occupied ? "#ef4444" : seat.selected ? "#f59e0b" : "#10b981";
+            return `
           <button type="button" data-seat="${seat.id}" data-occupied="${seat.occupied}"
-            class="seat-btn text-lg leading-none p-1 rounded transition-transform hover:scale-110 ${seat.occupied ? "cursor-not-allowed opacity-60" : "cursor-pointer"}">
-            ${seat.occupied ? SEAT_OCCUPIED : seat.selected ? SEAT_SELECTED : SEAT_AVAILABLE}
+            class="seat-btn p-0.5 rounded transition-all ${seat.occupied ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:brightness-110"}">
+            ${seatSvg(fill)}
           </button>
-        `
-          )
+        `;
+          })
           .join("")}
       </div>
     `
@@ -85,9 +86,9 @@ export default function reservationFormView(params) {
           <div class="flex items-center justify-between mb-3">
             <label class="block text-sm font-medium">Selecciona tus asientos</label>
             <div class="flex items-center gap-3 text-xs text-gray-500">
-              <span>${SEAT_AVAILABLE} Libre</span>
-              <span>${SEAT_SELECTED} Seleccionado</span>
-              <span>${SEAT_OCCUPIED} Ocupado</span>
+              <span>${seatSvg("#10b981")} Libre</span>
+              <span>${seatSvg("#f59e0b")} Seleccionado</span>
+              <span>${seatSvg("#ef4444")} Ocupado</span>
             </div>
           </div>
           <div id="seatMap" class="py-4 overflow-x-auto">
@@ -95,7 +96,7 @@ export default function reservationFormView(params) {
           </div>
           <div class="text-center mb-2">
             <span class="inline-flex items-center gap-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-4 py-2 rounded-lg font-semibold text-lg">
-              ${icon("ticket", "w-5 h-5 inline")} <span id="selectedCount">0</span> asiento(s)
+              ${icon("ticket", "w-5 h-5 inline mr-1")}<span id="selectedCount">0</span> asiento(s)
             </span>
           </div>
           <input type="hidden" name="quantity" value="0">
@@ -162,8 +163,9 @@ reservationFormView._init = async (params) => {
           if (seat) {
             if (!seat.occupied) {
               seat.selected = !seat.selected;
-              btn.innerHTML = seat.selected ? SEAT_SELECTED : SEAT_AVAILABLE;
-              btn.classList.toggle("scale-110", seat.selected);
+              btn.innerHTML = seatSvg(seat.selected ? "#f59e0b" : "#10b981");
+              btn.classList.toggle("ring-2", seat.selected);
+              btn.classList.toggle("ring-amber-400", seat.selected);
               updateQuantity();
             }
             break;
@@ -266,6 +268,7 @@ reservationFormView._init = async (params) => {
         await createReservation({ userId: user.id, screeningId: screening.id, quantity });
         await updateScreening(screening.id, { availableSeats: screening.availableSeats - quantity });
         showToast("Reserva creada con éxito", "success");
+        fireConfetti();
       }
       navigateTo("reservations");
     } catch (error) {

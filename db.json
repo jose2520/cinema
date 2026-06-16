@@ -14,7 +14,7 @@
       "password": "A123456",
       "role": "user",
       "name": "Carlos",
-      "photo": ""
+      "photo": "/photo/profile_Carlos.jpg"
     },
     {
       "id": "3",
@@ -65,7 +65,7 @@
       "date": "2026-06-10",
       "time": "20:00",
       "totalCapacity": 100,
-      "availableSeats": 82,
+      "availableSeats": 85,
       "status": "Activa"
     },
     {
@@ -87,7 +87,7 @@
       "date": "2026-06-12",
       "time": "21:00",
       "totalCapacity": 150,
-      "availableSeats": 150,
+      "availableSeats": 138,
       "status": "Activa"
     },
     {
@@ -132,8 +132,64 @@
       "screeningId": "1",
       "quantity": 3,
       "reservationDate": "2026-06-11",
-      "status": "Pendiente",
+      "status": "Cancelada",
       "id": "kLStt04BrZc"
+    },
+    {
+      "userId": "2",
+      "screeningId": "3",
+      "quantity": 1,
+      "reservationDate": "2026-06-12",
+      "status": "Cancelada",
+      "id": "BOnDh1vHh3s"
+    },
+    {
+      "userId": "2",
+      "screeningId": "3",
+      "quantity": 1,
+      "reservationDate": "2026-06-12",
+      "status": "Cancelada",
+      "id": "9p06RjRdseU"
+    },
+    {
+      "userId": "2",
+      "screeningId": "3",
+      "quantity": 10,
+      "reservationDate": "2026-06-12",
+      "status": "Cancelada",
+      "id": "DTY4fvlDVns"
+    },
+    {
+      "userId": "2",
+      "screeningId": "3",
+      "quantity": 1,
+      "reservationDate": "2026-06-12",
+      "status": "Cancelada",
+      "id": "2oU5KRlImQ4"
+    },
+    {
+      "userId": "2",
+      "screeningId": "3",
+      "quantity": 2,
+      "reservationDate": "2026-06-12",
+      "status": "Pendiente",
+      "id": "TmM6JMx4FMU"
+    },
+    {
+      "userId": "2",
+      "screeningId": "3",
+      "quantity": 9,
+      "reservationDate": "2026-06-12",
+      "status": "Pendiente",
+      "id": "Djy9NuVpet0"
+    },
+    {
+      "userId": "2",
+      "screeningId": "3",
+      "quantity": 1,
+      "reservationDate": "2026-06-12",
+      "status": "Pendiente",
+      "id": "wUwa-Pme684"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

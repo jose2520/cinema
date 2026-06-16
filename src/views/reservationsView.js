@@ -7,6 +7,7 @@ import { getReservations, updateReservation, deleteReservation } from "@/service
 import { getScreenings, updateScreening } from "@/services/screening.service";
 import { navigateTo } from "@/router/router";
 import { showToast } from "@/components/Toast";
+import { fireConfetti } from "@/utils/confetti";
 import { icon } from "@/utils/icons";
 
 // Vista que lista las reservas con filtro por estado y acciones según el rol
@@ -157,6 +158,7 @@ reservationsView._init = async () => {
                 reservations = reservations.map((x) => (x.id === id ? { ...x, status: "Confirmada" } : x));
                 render();
                 showToast("Reserva confirmada", "success");
+                fireConfetti();
               } catch {
                 showToast("Error al aprobar reserva", "error");
               }
